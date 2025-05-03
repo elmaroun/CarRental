@@ -33,6 +33,8 @@ urlpatterns = [
     path('login/', user_login, name='login'),
     path('logout/', views.user_logout, name='logout'),
     path('add_car/', views.add_car, name='add_car'),
+    path('cars/delete/<str:car_id>/', views.delete_car, name='delete_car')
+
 
 
 ]

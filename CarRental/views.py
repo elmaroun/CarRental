@@ -133,6 +133,11 @@ def CarsDisponible(request):
     cars = Car.objects.all()
     return render(request, 'CarRental/cars.html',{'cars': cars})
 
+def delete_car(request,car_id):
+    car = Car.objects.get(id=car_id)
+    car.delete()
+    return redirect('available_cars') 
+
 def CarManagement(request):
     now = timezone.now()
     
