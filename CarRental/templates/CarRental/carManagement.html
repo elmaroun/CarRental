@@ -153,9 +153,9 @@
                         <h6 class="text-primary mb-1 pb-3">{{ car.price_per_day}}</h6>
                       </div>
                       <div class="d-flex flex-row justify-content-center ">
-                        <button  type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary flex-fill mr-2" data-mdb-ripple-color="dark">
-                          Reserve
-                        </button>
+                        <a href="{% url 'add_reservation' car.id %}" class="btn btn-primary flex-fill mr-2">
+                            Reserve
+                        </a>
                         <button  type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-secondary flex-fill ms-1">Details</button>
                       </div>
                      

@@ -20,6 +20,8 @@ import json
 from django.db.models.functions import ExtractMonth, ExtractYear
 from django.core.exceptions import ValidationError
 from django.conf import settings
+import traceback
+from django.utils.dateparse import parse_date
 
 
 
@@ -139,6 +141,32 @@ def delete_car(request,car_id):
     return redirect('available_cars') 
 
 def CarManagement(request):
+    target_date =  timezone.now().date()
+    
+    try:
+        
+
+        # Obtenir les voitures réservées à cette date
+        reserved_car_ids = Reservation.objects.filter(
+            end_date__gte=target_date,
+            start_date__lte=target_date
+        ).values_list('car_id', flat=True)
+
+        # Obtenir les voitures non réservées
+        available_cars = Car.objects.exclude(id__in=list(reserved_car_ids))
+        
+        return render(request, 'CarRental/carManagement.html', {
+            'cars': available_cars
+        })
+        
+    except Exception as e:
+        error_details = traceback.format_exc()  # full traceback
+        messages.error(request, "Error fetching cars. Check logs for details.")
+        print(error_details)  # or use logging.error(error_details)
+        return render(request, 'CarRental/carManagement.html', {
+            'cars': [],
+            'error': error_details
+        })
     now = timezone.now()
     
     try:
@@ -302,3 +330,67 @@ def add_car(request):
             return render(request, 'CarRental/add_car.html', {'error_message': error_message})
 
     return render(request, 'CarRental/add_car.html')
+
+def add_reservation(request, car_id):
+    try:
+        car = Car.objects.get(id=car_id)
+        
+        if request.method == 'POST':
+            # Parse datetime strings
+            start_date = parse_date(request.POST.get('start_date'))
+            end_date = parse_date(request.POST.get('end_date'))
+
+            if not start_date or not end_date:
+                raise ValueError("Invalid date format")
+            # Get form data
+            cin = request.POST.get('cin')
+            client_name = request.POST.get('full_name')
+            email = request.POST.get('email')
+            phone = request.POST.get('phone')
+            start_date = request.POST.get('start_date')
+            end_date = request.POST.get('end_date')
+            
+            # Check if client exists by CIN
+            try:
+                client = Client.objects.get(cin=cin)
+                # Update existing client info if needed
+                client.full_name = client_name
+                client.email = email
+                client.phone = phone
+                client.save()
+            except Client.DoesNotExist:
+                # Create new client
+                client = Client.objects.create(
+                    full_name=client_name,
+                    email=email,
+                    phone=phone,
+                    cin=cin
+                )
+            
+            # Create reservation
+            Reservation.objects.create(
+                client=client,
+                car=car,
+                start_date=start_date,
+                end_date=end_date,
+                status='pending'  # or 'confirmed' depending on your workflow
+            )
+            
+            messages.success(request, "Reservation created successfully!")
+            return redirect('manage_reservation')            
+            
+        return render(request, 'CarRental/add_reservation.html', {
+            'car': car,
+            'today': timezone.now().strftime('%Y-%m-%dT%H:%M')
+        })
+        
+    except Car.DoesNotExist:
+        messages.error(request, "Car not found")
+        return redirect('cars_overview')
+    except Exception as e:
+        messages.error(request, f"Error: {str(e)}")
+        return render(request, 'CarRental/add_reservation.html', {
+            'car': car,
+            'error_message': str(e),
+            'today': timezone.now().strftime('%Y-%m-%dT%H:%M')
+        })
