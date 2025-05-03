@@ -197,9 +197,7 @@
                                 </div>
                                 <!-- Card Body -->
                                 <div class="card-body">
-                                    <div class="chart-area">
-                                        <canvas  id="ConsumptionPerMonthChart" ></canvas>
-                                    </div>
+                                        <canvas  id="reservationChart" ></canvas>
                                 </div>
                             </div>
                         </div>
@@ -210,25 +208,12 @@
                                 <!-- Card Header - Dropdown -->
                                 <div
                                     class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                                    <h6 class="m-0 font-weight-bold text-primary">Répartition des réservations par statut</h6>
-                                    
+                                    <h6 class="m-0 font-weight-bold text-primary">Répartition des réservations par statut</h6> 
                                 </div>
                                 <!-- Card Body -->
                                 <div class="card-body">
-                                    <div class="chart-pie pt-4 pb-2">
-                                        <canvas id="PaidVsUnpaid" ></canvas>
-                                    </div>
-                                    <div class="mt-4 text-center small">
-                                        <span class="mr-2">
-                                            <i class="fas fa-circle text-primary"></i> Direct
-                                        </span>
-                                        <span class="mr-2">
-                                            <i class="fas fa-circle text-success"></i> Social
-                                        </span>
-                                        <span class="mr-2">
-                                            <i class="fas fa-circle text-info"></i> Referral
-                                        </span>
-                                    </div>
+                                    <canvas id="reservationStatusChart" ></canvas>
+
                                 </div>
                             </div>
                         </div>
@@ -295,6 +280,50 @@
 
 </body>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    var ctx = document.getElementById('reservationChart').getContext('2d');
+    ctx.width = 1000;
+    ctx.height = 1000;
+    var chart = new Chart(ctx, {
+        type: 'bar', // Type of chart
+        data: {
+            labels: {{ months|safe }},
+                datasets: [{
+                label: 'Number Reservation',
+                backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                data: {{ counts|safe }}
+                }]
+            },
+        options: {
+            scales: {
+                y: {
+                        beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
+ 
+<script>
+    var ctx3 = document.getElementById('reservationStatusChart').getContext('2d');
+    ctx3.width = 400;
+    ctx3.height = 400;
+    var chart = new Chart(ctx3, {
+        type: 'pie',
+        data: {
+            labels: {{ status_labels|safe }},
+            datasets: [{
+                label: 'Leave Requests',
+                data: {{ status_data|safe }},
+                backgroundColor:  {{ status_colors|safe }},
+            }]
+        },
+    });
+    
+</script>
+    
 
 
 </html>

@@ -1,0 +1,106 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Add New Car</title>
+    <link href="{% static 'vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+    <link href="{% static 'css/sb-admin-2.min.css' %}" rel="stylesheet">
+</head>
+
+<body class="bg-gradient-primary">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-xl-8 col-lg-10 col-md-7">
+                <div class="card o-hidden border-0 shadow-lg my-5">
+                    <div class="card-body p-0">
+                        <div class="row justify-content-center">
+                            <div class="col-lg-10">
+                                <div class="p-5">
+                                    <form class="user" style="color:black;" method="post"  enctype="multipart/form-data">
+                                        {% if error_message %}
+                                        <div class="alert alert-danger">
+                                            {{ error_message }}
+                                        </div>
+                                        {% endif %}
+                                        {% csrf_token %}
+                                        
+                                        <!-- Image Upload (Single File) -->
+                                        <div class="form-group">
+                                            <p class="mb-1 ml-2">Car Image</p>
+                                            <div class="custom-file">
+                                                <input type="file" class="custom-file-input" id="carImage" 
+                                                       name="url_img" accept="image/*" required>
+                                                <label class="custom-file-label" for="carImage">Choose file...</label>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Brand -->
+                                        <div class="form-group">
+                                            <p class="mb-1 ml-2">Brand</p>
+                                            <input type="text" name="brand" class="form-control form-control-user"
+                                                id="carBrand" placeholder="Enter car brand (e.g., Toyota, BMW)" required>
+                                        </div>
+                                        
+                                        <!-- Type -->
+                                        <div class="form-group">
+                                            <p class="mb-1 ml-2">Type</p>
+                                            <input type="text" name="fuel_type" class="form-control form-control-user"
+                                                id="carType" placeholder="Enter car type (e.g., Sedan, SUV)" required>
+                                        </div>
+                                        
+                                        <!-- Transmission -->
+                                        <div class="form-group">
+                                            <p class="mb-1 ml-2">Transmission</p>
+                                            <select class="form-control" id="carTransmission" name="transmission" required>
+                                                <option value="">Select transmission type</option>
+                                                <option value="Automatic">Automatic</option>
+                                                <option value="Manual">Manual</option>
+                                                <option value="Semi-Automatic">Semi-Automatic</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <!-- Number of Seats -->
+                                        <div class="form-group">
+                                            <p class="mb-1 ml-2">Number of Seats</p>
+                                            <input type="number" class="form-control form-control-user" name="number_of_seats"
+                                                id="carSeats" min="2" max="10" placeholder="Enter number of seats" required>
+                                        </div>
+                                        
+                                        <!-- Price per Day -->
+                                        <div class="form-group">
+                                            <p class="mb-1 ml-2">Price per Day ($)</p>
+                                            <input type="number" class="form-control form-control-user" name="price_per_day"
+                                                id="carPrice" min="0" step="0.01" placeholder="Enter rental price per day" required>
+                                        </div>
+                                        
+                                        <button type="submit" class="btn btn-primary btn-user btn-block">
+                                            Add Car to Database
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
+    <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+
+    <script>
+        document.querySelector('.custom-file-input').addEventListener('change', function(e) {
+            var fileName = document.getElementById("carImage").files[0].name;
+            var nextSibling = e.target.nextElementSibling;
+            nextSibling.innerText = fileName;
+        });
+    </script>
+</body>
+</html>

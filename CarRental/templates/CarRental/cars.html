@@ -106,7 +106,7 @@
         <h1 class="h3 mb-2 text-gray-800">Reservations Overview</h1>
         <p class="mb-4">Manage your reservations easily with the table below.</p>
         <div class="d-flex flex-row-reverse">
-        <a href="#" class="btn btn-secondary btn-icon-split">
+        <a href="{% url 'add_car' %}" class="btn btn-secondary btn-icon-split">
             <span class="icon text-white-50">
                 <i class="fas fa-plus-circle"></i> 
             </span>
@@ -114,7 +114,30 @@
         </a>
 
         </div>
+       
         <div class="card-body">
+            {% if messages %}
+            <div id="temp-message" class="alert alert-success alert-dismissible fade show mt-2 mb-2" 
+                style="">
+                {% for message in messages %}
+                    {{ message }}
+                {% endfor %}
+            </div>
+
+            <script>
+                // Auto-hide message after 3 seconds
+                setTimeout(function() {
+                    var message = document.getElementById('temp-message');
+                    if (message) {
+                        message.style.transition = 'opacity 0.5s';
+                        message.style.opacity = '0';
+                        setTimeout(function() {
+                            message.remove();
+                        }, 500);
+                    }
+                }, 3000);  // 3000 milliseconds = 3 seconds
+            </script>
+            {% endif %}
         <div class="table-responsive">
 
             <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">

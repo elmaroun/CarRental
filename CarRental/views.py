@@ -1,3 +1,4 @@
+import os
 from django.shortcuts import render, redirect
 from django.db.models import Count
 from django.utils import timezone
@@ -17,6 +18,8 @@ from django.contrib.auth import get_user_model
 from .backends import MongoDBAuthBackend
 import json
 from django.db.models.functions import ExtractMonth, ExtractYear
+from django.core.exceptions import ValidationError
+from django.conf import settings
 
 
 
@@ -52,25 +55,65 @@ def user_logout(request):
     return redirect('login')
 
 def dashboard(request):
-    TotalReservation = Reservation.objects.count()
-    TotalReservationPending= Reservation.objects.filter(
-        status='pending'
-        ).count()
-    TotalCars= Car.objects.count()
-    TotalClient= Client.objects.count()
+    try:
+        TotalReservation = Reservation.objects.count()
+        TotalReservationPending = Reservation.objects.filter(status='pending').count()
+        TotalCars = Car.objects.count()
+        TotalClient = Client.objects.count()
 
-
-    
+        one_year_ago = timezone.now() - timedelta(days=365)
         
-    context = {
-    'TotalReservation': TotalReservation,
-    'TotalReservationPending': TotalReservationPending,
-    'TotalCars': TotalCars,
-    'TotalClient': TotalClient,
+        reservations = Reservation.objects.filter(
+            created_at__gte=one_year_ago
+        ).values_list('created_at', flat=True)
+        
+        from collections import defaultdict
+        monthly_counts = defaultdict(int)
+        
+        for date in reservations:
+            key = date.strftime('%Y-%m')  
+            monthly_counts[key] += 1
+        
+        sorted_months = sorted(monthly_counts.items())
+        months = [datetime.strptime(m[0], '%Y-%m').strftime('%B %Y') for m in sorted_months]
+        counts = [m[1] for m in sorted_months]
+        
 
-}
-
-    return render(request, 'CarRental/index.html',context)
+        status_counts = Reservation.objects.values('status').annotate(
+            count=Count('id')
+            ).order_by('status')
+        
+        # Prepare data for the pie chart
+        status_labels = []
+        status_data = []
+        status_colors = {
+            'pending': '#ffc107',    # Yellow
+            'confirmed': '#4caf50',  # Green
+            'cancelled': '#f44336'   # Red
+        }
+        
+        for item in status_counts:
+            status_labels.append(item['status'].capitalize())
+            status_data.append(item['count'])
+        
+        context = {
+            'TotalReservation': TotalReservation,
+            'TotalReservationPending': TotalReservationPending,
+            'TotalCars': TotalCars,
+            'TotalClient': TotalClient,
+            'months': months,
+            'counts': counts,
+            'status_labels': status_labels,
+            'status_data': status_data,
+            'status_colors': list(status_colors.values())
+        }
+        return render(request, 'CarRental/index.html', context)
+    
+    except Exception as e:
+        # For debugging - remove in production
+        import traceback
+        traceback.print_exc()
+        return render(request, 'error.html', {'error': str(e)})
 
 
 
@@ -113,6 +156,7 @@ def CarManagement(request):
             for car in available_cars:
                 car['id'] = str(car['_id'])
                 car['is_available'] = True
+                
     
         return render(request, 'CarRental/carManagement.html', {
             'cars': available_cars
@@ -132,3 +176,124 @@ def History(request):
     ).select_related('client', 'car').all()
     
     return render(request, 'CarRental/history.html', {'reservations': reservations})
+
+def add_car(request):
+    if request.method == 'POST':
+        # Initialize error message
+        error_message = None
+        
+        # Get form data
+        brand = request.POST.get('brand', '').strip()
+        fuel_type = request.POST.get('fuel_type', '').strip()
+        transmission = request.POST.get('transmission', '').strip()
+        
+        # Validate required text fields
+        if not all([brand, fuel_type, transmission]):
+            error_message = "Please fill all required fields"
+        
+        # Validate and convert numbers
+        try:
+            number_of_seats = int(request.POST.get('number_of_seats', 0))
+            price_per_day = float(request.POST.get('price_per_day', 0.0))
+        except (TypeError, ValueError):
+            error_message = "Please enter valid numbers for seats and price"
+        
+        # Validate image
+        image = request.FILES.get('url_img')
+        if not image:
+            error_message = "Please upload an image"
+        
+        # If no errors, proceed with saving
+        if not error_message:
+            try:
+                # Create upload directory
+                upload_dir = os.path.join(settings.MEDIA_ROOT, 'cars')
+                os.makedirs(upload_dir, exist_ok=True)
+                
+                # Generate unique filename
+                timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+                filename = f"{timestamp}_{image.name}"
+                file_path = os.path.join(upload_dir, filename)
+                
+                # Save the file
+                with open(file_path, 'wb+') as destination:
+                    for chunk in image.chunks():
+                        destination.write(chunk)
+                    
+                # Create and save car
+                car = Car(
+                    url_img=f"/media/cars/{filename}",  # Full path as requested
+                    brand=brand,
+                    fuel_type=fuel_type,
+                    transmission=transmission,
+                    number_of_seats=number_of_seats,
+                    price_per_day=price_per_day
+                )
+                car.save()
+                
+                messages.success(request, "Car added successfully!")
+                return redirect('available_cars')            
+            except Exception as e:
+                error_message = f"An error occurred: {str(e)}"
+        
+            return render(request, 'CarRental/add_car.html', {
+                'error_message': error_message,
+                'form_data': request.POST  # Preserve form inputs
+            })
+        return render(request, 'CarRental/add_car.html')
+    if request.method == 'POST':
+        try:
+            # Get form data with proper validation
+            brand = request.POST.get('brand', '').strip()
+            fuel_type = request.POST.get('fuel_type', '').strip()
+            transmission = request.POST.get('transmission', '').strip()
+            
+            # Convert numbers with validation
+            try:
+                number_of_seats = int(request.POST.get('number_of_seats', 0))
+                price_per_day = float(request.POST.get('price_per_day', 0.0))
+            except (TypeError, ValueError):
+                raise ValidationError("Invalid number input")
+
+            # Validate required fields
+            if not all([brand, fuel_type, transmission]):
+                raise ValidationError("Please fill all required fields")
+
+            # Handle image upload
+            image = request.FILES.get('url_img')
+            if not image:
+                raise ValidationError("Please upload an image")
+
+            # Create upload directory
+            upload_dir = os.path.join(settings.MEDIA_ROOT, 'car_images')
+            os.makedirs(upload_dir, exist_ok=True)
+            
+            # Generate unique filename
+            timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+            filename = f"{timestamp}_{image.name}"
+            file_path = os.path.join(upload_dir, filename)
+            
+            # Save the file
+            with open(file_path, 'wb+') as destination:
+                for chunk in image.chunks():
+                    destination.write(chunk)
+            
+            # Create and save car
+            car = Car(
+                url_img=os.path.join('car_images', filename),
+                brand=brand,
+                fuel_type=fuel_type,
+                transmission=transmission,
+                number_of_seats=number_of_seats,
+                price_per_day=price_per_day
+            )
+            car.save()
+            
+            return redirect('success_page')
+            
+        except ValidationError as e:
+            error_message = str(e)
+            # You can pass this error back to the template
+            return render(request, 'CarRental/add_car.html', {'error_message': error_message})
+
+    return render(request, 'CarRental/add_car.html')
