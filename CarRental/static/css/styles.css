@@ -11036,7 +11036,7 @@ header.masthead .masthead-heading {
 
 .portfolio-modal .modal-dialog {
   margin: 1rem;
-  2idth: 200vw;
+  width: 200vw;
   display: flex;
   justify-content: center;
 }
