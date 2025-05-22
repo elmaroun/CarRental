@@ -36,7 +36,9 @@ urlpatterns = [
     path('cars/delete/<str:car_id>/', views.delete_car, name='delete_car'),
     path('add_reservation/<int:car_id>/', views.add_reservation, name='add_reservation'),
 
-
+    path('reservation/<int:id>/accept/', views.accept_reservation, name='accept_reservation'),
+    path('reservation/<int:id>/decline/', views.decline_reservation, name='decline_reservation'),
+    path('reservations/manage/', views.ManageReservation, name='manage_reservation'),
 
 ]
 

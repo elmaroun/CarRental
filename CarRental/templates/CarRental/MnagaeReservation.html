@@ -101,14 +101,18 @@
     <div class="container-fluid">
         <h1 class="h3 mb-2 text-gray-800">Reservations Overview</h1>
         <p class="mb-4">Manage your reservations easily with the table below.</p>
-        <div class="row mb-4">
-            <div class="col-md-3">
-                <input type="text" id="clientSearch" class="form-control" placeholder="Search by Client Name">
-            </div>
-            <div class="col-md-3">
-                <input type="text" id="carSearch" class="form-control" placeholder="Search by Car Name">
-            </div>
-        </div>
+            <form method="get" class="row mb-4">
+                <div class="col-md-3">
+                    <input type="text" name="client_name" id="clientSearch" class="form-control" placeholder="Search by Client Name" value="{{ client_name }}">
+                </div>
+                <div class="col-md-3">
+                    <input type="text" name="car_name" id="carSearch" class="form-control" placeholder="Search by Car Name" value="{{ car_name }}">
+                </div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-primary">Search</button>
+                    <a href="{% url 'manage_reservation' %}" class="btn btn-secondary">Reset</a>
+                </div>
+            </form>
         <div class="table-responsive">
             <table class="table table-bordered bg-white" id="dataTable" width="100%" cellspacing="0">
                 <thead>
@@ -132,20 +136,21 @@
                         <td>
                             {{ reservation.total_price|floatformat:2 }} DH
                         </td>
-                        <td><a href="#" class="btn btn-primary btn-icon-split">
-                            <span class="icon text-white-50">
-                                <i class="fas fa-check-circle"></i> <!-- Icon for Accept -->
-                            </span>
-                            <span class="text">Accept</span>
-                        </a>
+                        <td>
+                            <a href="{% url 'accept_reservation' reservation.id %}" class="btn btn-primary btn-icon-split">
+                                <span class="icon text-white-50">
+                                    <i class="fas fa-check-circle"></i>
+                                </span>
+                                <span class="text">Accept</span>
+                            </a>
                         
-                        <a href="#" class="btn btn-danger btn-icon-split">
-                            <span class="icon text-white-50">
-                                <i class="fas fa-times-circle"></i> <!-- Icon for Decline -->
-                            </span>
-                            <span class="text">Decline</span>
-                        </a>
-                        </td>
+                            <a href="{% url 'decline_reservation' reservation.id %}" class="btn btn-secondary btn-icon-split">
+                                <span class="icon text-white-50">
+                                    <i class="fas fa-times-circle"></i>
+                                </span>
+                                <span class="text">Decline</span>
+                            </a>
+                        </td>
                     </tr>  
                 </tbody>
                 {% endfor %}

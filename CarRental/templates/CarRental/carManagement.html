@@ -114,58 +114,63 @@
     <!-- DataTales Example -->
     
             <div class="container">
-                <div class="d-flex mb-2 ">
+                <div class="d-flex mb-4 ">
                     <div class="row">
-                        <!-- Select pour Type -->
-                        <div class="col-lg-4">
-                            <select id="typeFilter" class="form-control  ">
-                                <option value="">Tous types</option>
-                                <option value="sedan">Sedan</option>
-                                <option value="suv">SUV</option>
-                                <option value="truck">Camion</option>
-                            </select>
-                        </div>
+                        <!-- here like we did for reservations.. i want the inout for car name only -->
                         
-                        <!-- Dates Début/Fin -->
-                        <div class="col-lg-8">
-                            <div class="row g-2">
-                                <div class="col-6">
-                                    <input type="date" id="startDate" class="form-control" placeholder="Date début">
-                                </div>
-                                <div class="col-6">
-                                    <input type="date" id="endDate" class="form-control" placeholder="Date fin">
-                                </div>
+                        <!-- here want two input for Dates Début/Fin of availibile cars  -->
+                        <form method="get" class="mb-4">
+                            <div class="row">
+                              <!-- Car name input -->
+                              <div class="col-md-4">
+                                <input type="text" name="brand" class="form-control" placeholder="Car name" value="{{ request.GET.brand }}">
+                              </div>
+                          
+                              <!-- Start and End Dates -->
+                              <div class="col-md-3">
+                                <input type="date" name="start_date" class="form-control" value="{{ request.GET.start_date }}">
+                              </div>
+                              <div class="col-md-3">
+                                <input type="date" name="end_date" class="form-control" value="{{ request.GET.end_date }}">
+                              </div>
+                          
+                              <!-- Buttons -->
+                              <div class="col-md-2 d-flex">
+                                <button type="submit" class="btn btn-primary me-2 mr-2">Search</button>
+                                <a href="{% url 'cars_management' %}" class="btn btn-secondary">Reset</a>
+                              </div>
+                              
                             </div>
-                        </div>
+                          </form>
+                          
                     </div>
-                    
                 </div>
-              <div class="row">
-                {% for car in cars %}
 
-                <div class="col-md-12 col-lg-4 mb-4 mb-lg-0">
-                  <div class="card text-black">
-                    <img src="{{ car.url_img}}" alt="Car Image" class="img-fluid">
+                <div class="row">
+                    {% for car in cars %}
 
-                    <div class="card-body">
-                      <div class="text-center mt-1">
-                        <h4 class="card-title">{{ car.brand }}</h4>
-                        <h6 class="text-primary mb-1 pb-3">{{ car.price_per_day}}</h6>
-                      </div>
-                      <div class="d-flex flex-row justify-content-center ">
+                    <div class="col-md-12 col-lg-4 mb-4 mb-lg-0 pb-4">
+                    <div class="card text-black">
+                        <img src="{{ car.url_img}}" alt="Car Image" class="img-fluid">
+
+                        <div class="card-body">
+                        <div class="text-center mt-1">
+                            <h4 class="card-title">{{ car.brand }}</h4>
+                            <h6 class="text-primary mb-1 pb-3">{{ car.price_per_day}} MAD</h6>
+                        </div>
+                        <div class="d-flex flex-row justify-content-center ">
                         <a href="{% url 'add_reservation' car.id %}" class="btn btn-primary flex-fill mr-2">
                             Reserve
                         </a>
-                        <button  type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-secondary flex-fill ms-1">Details</button>
-                      </div>
-                     
-                    
+                            <button  type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-secondary flex-fill ms-1">Details</button>
+                        </div>
+                        
+                        
+                        </div>
                     </div>
-                  </div>
-                </div>
+                    </div>
                 {% endfor %}
-
-              </div>
+                </div>
             </div>
           
 </div>                       

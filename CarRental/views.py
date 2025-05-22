@@ -22,6 +22,11 @@ from django.core.exceptions import ValidationError
 from django.conf import settings
 import traceback
 from django.utils.dateparse import parse_date
+from django.shortcuts import get_object_or_404
+from django.utils.dateparse import parse_date
+import traceback
+
+
 
 
 
@@ -140,12 +145,10 @@ def delete_car(request,car_id):
     car.delete()
     return redirect('available_cars') 
 
-def CarManagement(request):
+def CarManagementt(request):
     target_date =  timezone.now().date()
-    
-    try:
-        
 
+    try:
         # Obtenir les voitures réservées à cette date
         reserved_car_ids = Reservation.objects.filter(
             end_date__gte=target_date,
@@ -167,40 +170,78 @@ def CarManagement(request):
             'cars': [],
             'error': error_details
         })
-    now = timezone.now()
-    
+
+from django.db.models import Q
+
+def CarManagementtt(request):
+    brand = request.GET.get('brand', '').strip()
+    start_date = parse_date(request.GET.get('start_date', ''))
+    end_date = parse_date(request.GET.get('end_date', ''))
+
     try:
-        with connection['default'].cursor() as cursor:
-            reserved_car_ids = cursor.db['carrental_reservation'].find({
-                'status': 'confirmed',
-                'start_date': {'$lte': now},
-                'end_date': {'$gte': now}
-            }).distinct('car_id')
-            
-            # Convert ObjectIds to strings for comparison
-            reserved_car_ids = [str(car_id) for car_id in reserved_car_ids]
-            
-            # Get available cars (not in reserved list)
-            available_cars = list(cursor.db['carrental_car'].find({
-                '_id': {'$nin': reserved_car_ids}
-            }))
-            
-            # Convert MongoDB documents to Django-like objects
-            for car in available_cars:
-                car['id'] = str(car['_id'])
-                car['is_available'] = True
-                
-    
+        # Start with all cars
+        cars = Car.objects.all()
+
+        # Filter by brand if given
+        if brand:
+            cars = cars.filter(brand__icontains=brand)
+
+        # If both dates are provided, filter out cars that are reserved during that period
+        if start_date and end_date:
+            reserved_car_ids = Reservation.objects.filter(
+                start_date__lte=end_date,
+                end_date__gte=start_date
+            ).values_list('car_id', flat=True)
+
+            cars = cars.exclude(id__in=reserved_car_ids)
+
         return render(request, 'CarRental/carManagement.html', {
-            'cars': available_cars
+            'cars': cars
         })
-        
+
     except Exception as e:
-        # Handle any database errors gracefully
-        available_cars = []
+        error_details = traceback.format_exc()
+        messages.error(request, "Error fetching cars. Check logs for details.")
+        print(error_details)
         return render(request, 'CarRental/carManagement.html', {
-            'cars': available_cars,
-            'error': str(e)
+            'cars': [],
+            'error': error_details
+        })
+
+def CarManagement(request):
+    brand = request.GET.get('brand', '').strip()
+    start_date = parse_date(request.GET.get('start_date', ''))
+    end_date = parse_date(request.GET.get('end_date', ''))
+
+    try:
+        cars = Car.objects.all()
+
+        if brand:
+            cars = cars.filter(brand__icontains=brand)
+
+        # Filter only if both start and end date are provided
+        if start_date and end_date:
+            # Get reservations that are confirmed and intersect with selected period
+            reserved_car_ids = Reservation.objects.filter(
+                status='confirmed',
+                start_date__lte=end_date,
+                end_date__gte=start_date
+            ).values_list('car_id', flat=True)
+
+            # Exclude those cars from the list
+            cars = cars.exclude(id__in=reserved_car_ids)
+
+        return render(request, 'CarRental/carManagement.html', {
+            'cars': cars
+        })
+
+    except Exception as e:
+        error_details = traceback.format_exc()
+        messages.error(request, "Error fetching cars. Check logs for details.")
+        print(error_details)
+        return render(request, 'CarRental/carManagement.html', {
+            'cars': [],
+            'error': error_details
         })
 
 def History(request):
@@ -394,3 +435,35 @@ def add_reservation(request, car_id):
             'error_message': str(e),
             'today': timezone.now().strftime('%Y-%m-%dT%H:%M')
         })
+
+def accept_reservation(request, id):
+    reservation = get_object_or_404(Reservation, id=id)
+    reservation.status = 'confirmed'
+    reservation.save()
+    return redirect('manage_reservation')
+
+def decline_reservation(request, id):
+        reservation = get_object_or_404(Reservation, id=id)
+        reservation.status = 'cancelled'
+        reservation.save()
+        return redirect('manage_reservation')
+
+
+def ManageReservation(request):
+    reservations = Reservation.objects.filter(status='pending').select_related('client', 'car')
+
+    client_name = request.GET.get('client_name', '').strip()
+    car_name = request.GET.get('car_name', '').strip()
+
+    if client_name:
+        reservations = reservations.filter(client__full_name__icontains=client_name)
+
+    if car_name:
+        reservations = reservations.filter(car__brand__icontains=car_name)  # Adjust if your car name is in another field
+
+    context = {
+        'reservations': reservations,
+        'client_name': client_name,
+        'car_name': car_name
+    }
+    return render(request, 'CarRental/MnagaeReservation.html',context)
