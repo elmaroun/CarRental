@@ -124,13 +124,6 @@ def dashboard(request):
 
 
 
-def ManageReservation(request):
-    reservations = Reservation.objects.filter(
-        status='pending'
-    ).select_related('client', 'car')
-    
-    return render(request, 'CarRental/MnagaeReservation.html', {'reservations': reservations})
-
 def ManageClient(request):
     clients = Client.objects.annotate(
         reservation_count=Count('reservation')
@@ -467,3 +460,25 @@ def ManageReservation(request):
         'car_name': car_name
     }
     return render(request, 'CarRental/MnagaeReservation.html',context)
+
+
+def ManageClient(request):
+    clients = Client.objects.all()
+    
+    # Get search parameters from GET request
+    client_name = request.GET.get('client_name', '').strip()
+    cin = request.GET.get('cin', '').strip()
+    
+    # Apply filters if they exist
+    if client_name:
+        clients = clients.filter(full_name__icontains=client_name)
+    
+    if cin:
+        clients = clients.filter(cin__icontains=cin)
+    
+    context = {
+        'clients': clients,
+        'client_name': client_name,
+        'cin': cin
+    }
+    return render(request, 'CarRental/ManageClient.html', context)
