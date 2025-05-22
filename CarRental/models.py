@@ -90,7 +90,7 @@ class Car(models.Model):
     fuel_type = models.CharField(max_length=100)
     transmission = models.CharField(max_length=100) 
     number_of_seats = models.IntegerField()
-    price_per_day = models.FloatField(default=0.0) 
+    price_per_day = models.FloatField(default=0.0)
     date_added = models.DateTimeField(auto_now_add=True)
 
     def _str_(self):

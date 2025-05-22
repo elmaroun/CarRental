@@ -12,7 +12,6 @@
     <meta name="author" content="">
 
     <title>Mnager - Dashboard</title>
-
     <!-- Custom fonts for this template-->
     <link href="{% static 'vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet" type="text/css">
     <link href="{% static 'css/sb-admin-2.min.css' %}" rel="stylesheet">
@@ -22,7 +21,7 @@
 
 <body id="page-top">
 
-    <!-- Page Wrapper -->
+
     <div id="wrapper">
 
         <!-- Sidebar -->
@@ -160,10 +159,18 @@
                         <a href="{% url 'add_reservation' car.id %}" class="btn btn-primary flex-fill mr-2">
                             Reserve
                         </a>
-                            <button  type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-secondary flex-fill ms-1">Details</button>
+                            <button  type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-secondary flex-fill ms-1" 
+                                    onclick="showCarDetails(
+                                        '{{ car.brand }}',
+                                        '{{ car.url_img }}',
+                                        '{{ car.fuel_type }}',
+                                        '{{ car.transmission }}',
+                                        '{{ car.number_of_seats }}',
+                                        '{{ car.price_per_day }}',
+                                        '{{ car.date_added|date:"Y-m-d" }}'
+                                    )">Details
+                            </button> 
                         </div>
-                        
-                        
                         </div>
                     </div>
                     </div>
@@ -208,12 +215,49 @@
         </div>
     </div>
 
+    <div class="portfolio-modal modal fade" id="portfolioModal2" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content p-4 rounded-4 shadow">
+                <div class="container">
+                    <div class="row justify-content-center">
+                        <div class="col-lg-10">
+                            <div class="modal-body">
+                                <!-- Title -->
+                                <h2 class="text-uppercase mb-4 fw-bold text-center">Toyota Corolla 2022</h2>
+                                <!-- Image -->
+                                <div class="text-center mb-4">
+                                    <img id="mainImage" src="img/portfolio/1.jpg" class="img-fluid rounded shadow-sm" alt="Voiture principale">
+                                </div>
+    
+                                <!-- Car Details -->
+                                <div class="px-3">
+                                    <h6 class="mb-2"><strong >Type de carburant :</strong> Essence</h6>
+                                    <h6 class="mb-2"><strong >Transmission :</strong> Automatique</h6>
+                                    <h6 class="mb-2"><strong>Nombre de places :</strong> 5</h6>
+                                    <h6 class="mb-2"><strong>Prix :</strong> 132</h6>
+                                    <h6 class="mb-2"><strong>Date ajoutée :</strong> 132</h6>
+                                </div>
+    
+                                <!-- Optional Close Button -->
+                                <div class="text-center mt-4">
+                                    <button class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     <!-- Bootstrap core JavaScript-->
     <script src="vendor/jquery/jquery.min.js"></script>
     <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
     <!-- Core plugin JavaScript-->
     <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script src="https://cdn.startbootstrap.com/sb-forms-latest.js"></script>
 
     <!-- Custom scripts for all pages-->
     <script src="js/sb-admin-2.min.js"></script>
@@ -224,6 +268,34 @@
     <!-- Page level custom scripts -->
     <script src="js/demo/chart-area-demo.js"></script>
     <script src="js/demo/chart-pie-demo.js"></script>
+    <script>
+        function showCarDetails(brand, imageUrl, fuelType, transmission, seats, price,date_added) {
+            document.querySelector('#portfolioModal2 h2').textContent = brand;
+            document.getElementById('mainImage').src = imageUrl;
+            document.querySelectorAll('.thumbnail-img').forEach(img => {
+                img.src = imageUrl; // Or use different images if available
+            });
+
+            const modalBody = document.querySelector('#portfolioModal2 .modal-body');
+            modalBody.querySelector('h6:nth-of-type(1)').innerHTML = 
+                '<strong>Type de carburant : </strong>' + fuelType;
+            modalBody.querySelector('h6:nth-of-type(2)').innerHTML = 
+                '<strong>Transmission : </strong>' + transmission;
+            modalBody.querySelector('h6:nth-of-type(3)').innerHTML = 
+                '<strong>Nombre de place :</strong>' + seats;
+            modalBody.querySelector('h6:nth-of-type(4)').innerHTML = 
+                '<strong>Price :</strong>' + price;
+            modalBody.querySelector('h6:nth-of-type(5)').innerHTML = 
+            '<strong>Date ajoutée:</strong>' + date_added ;
+
+            $('#portfolioModal2').modal('show');
+        }
+
+
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 
