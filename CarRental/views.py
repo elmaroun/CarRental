@@ -25,6 +25,9 @@ from django.utils.dateparse import parse_date
 from django.shortcuts import get_object_or_404
 from django.utils.dateparse import parse_date
 import traceback
+from django.http import JsonResponse
+from decimal import Decimal, InvalidOperation
+
 
 
 
@@ -467,3 +470,28 @@ def ManageReservation(request):
         'car_name': car_name
     }
     return render(request, 'CarRental/MnagaeReservation.html',context)
+
+def modify_car(request):
+    if request.method == 'POST':
+        try:
+            car_id = request.POST.get('car_id')
+            car = Car.objects.get(id=car_id)
+            
+            # Update fields
+            car.brand = request.POST.get('carBrand')
+            car.fuel_type = request.POST.get('carFuel')
+            car.transmission = request.POST.get('carTransmission')
+            car.seats = int(request.POST.get('carSeats'))
+            price_str = request.POST.get('carPrice')
+            car.price = Decimal(price_str)
+            
+            # Handle file upload
+            if 'carImage' in request.FILES:
+                car.image = request.FILES['carImage']
+            
+            car.save()
+            
+            return JsonResponse({'success': True})
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+    return JsonResponse({'success': False, 'error': 'Invalid request'})
