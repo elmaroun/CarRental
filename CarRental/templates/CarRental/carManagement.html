@@ -31,13 +31,13 @@
         <!-- End of Sidebar -->
 
         <!-- Content Wrapper -->
-        <div id="content-wrapper" class="d-flex flex-column" style="margin-left: 14rem; width: calc(100% - 14rem);">
+        <div id="content-wrapper" class="d-flex flex-column" style="margin-left: 14rem; width: calc(100% - 14rem); padding-top: 6rem;">
 
             <!-- Main Content -->
             <div id="content">
 
                 <!-- Topbar -->
-                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 fixed-top shadow" style="z-index: 900;">
 
                     <!-- Sidebar Toggle (Topbar) -->
                     <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
@@ -107,19 +107,17 @@
 
     <!-- Page Heading -->
     <h1 class="h3 mb-2 text-gray-800">Cars Overview</h1>
-    <p class="mb-3">Manage your reservations easily with the table below.</p>
+    <p class="mb-4">Manage your reservations easily with the table below.</p>
 
    
-    <br>
     <!-- DataTales Example -->
     
-            <div class="container">
                 <div class="d-flex mb-4 ">
                     <div class="row">
                         <!-- here like we did for reservations.. i want the inout for car name only -->
                         
                         <!-- here want two input for Dates Début/Fin of availibile cars  -->
-                        <form method="get" class="mb-4">
+                        <form method="get" class="ml-3">
                             <div class="row">
                               <!-- Car name input -->
                               <div class="col-md-4">
@@ -171,7 +169,6 @@
                     </div>
                 {% endfor %}
                 </div>
-            </div>
           
 </div>                       
 
