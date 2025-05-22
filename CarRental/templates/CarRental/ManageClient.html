@@ -83,14 +83,20 @@
                     <div class="container-fluid">
                         <h1 class="h3 mb-2 text-gray-800">Clients Overview</h1>
                         <p class="mb-4">Manage your reservations easily with the table below.</p>
-                        <div class="row mb-4">
+                        <form method="get" class="row mb-4">
                             <div class="col-md-3">
-                                <input type="text" id="clientSearch" class="form-control" placeholder="Search by Client Name">
+                                <input type="text" name="client_name" id="clientNameSearch" class="form-control" 
+                                    placeholder="Search by Client Name" value="{{ client_name }}">
                             </div>
                             <div class="col-md-3">
-                                <input type="text" id="carSearch" class="form-control" placeholder="Search by CIN">
+                                <input type="text" name="cin" id="cinSearch" class="form-control" 
+                                    placeholder="Search by CIN" value="{{ cin }}">
                             </div>
-                        </div>
+                            <div class="col-md-3">
+                                <button type="submit" class="btn btn-primary">Search</button>
+                                <a href="{% url 'manage_client' %}" class="btn btn-secondary">Reset</a>
+                            </div>
+                        </form>
                         <div class="table-responsive">
                             <table class="table table-bordered bg-white" id="dataTable" width="100%" cellspacing="0">
                                 <thead>

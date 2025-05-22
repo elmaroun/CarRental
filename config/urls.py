@@ -25,7 +25,6 @@ from CarRental.views import user_login
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.dashboard, name='dashboard'),
-    path('manage-reservation/', views.ManageReservation, name='manage_reservation'),
     path('manage-client/', views.ManageClient, name='manage_client'),
     path('cars/', views.CarManagement, name='cars_management'),
     path('history/', views.History, name='history'),
