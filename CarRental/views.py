@@ -460,7 +460,9 @@ def ManageReservation(request):
 
 
 def ManageClient(request):
-    clients = Client.objects.all()
+    clients = Client.objects.annotate(
+        reservation_count=Count('reservation')
+    ).all()
     
     # Get search parameters from GET request
     client_name = request.GET.get('client_name', '').strip()
