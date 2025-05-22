@@ -100,17 +100,38 @@
     <div class="container-fluid">
         <h1 class="h3 mb-2 text-gray-800">Reservations Overview</h1>
         <p class="mb-4">Manage your reservations easily with the table below.</p>
-        <div class="d-flex flex-row-reverse">
-        <a href="{% url 'add_car' %}" class="btn btn-secondary btn-icon-split">
-            <span class="icon text-white-50">
-                <i class="fas fa-plus-circle"></i> 
-            </span>
-            <span class="text">Add Car</span>
-        </a>
-
-        </div>
+        <form method="get" class="row mb-4 align-items-center">
+            <div class="col-md-3">
+                <input type="text" name="car_name" id="carSearch" class="form-control" 
+                    placeholder="Search by Car Name" value="{{ request.GET.car_name }}">
+            </div>
+            <div class="col-md-3">
+                <select name="price_range" id="priceRange" class="form-control">
+                    <option value="">All Prices</option>
+                    <option value="<100" {% if request.GET.price_range == '<100' %}selected{% endif %}>Under 100 DH</option>
+                    <option value="<200" {% if request.GET.price_range == '<200' %}selected{% endif %}>Under 200 DH</option>
+                    <option value="<300" {% if request.GET.price_range == '<300' %}selected{% endif %}>Under 300 DH</option>
+                    <option value="<400" {% if request.GET.price_range == '<400' %}selected{% endif %}>Under 400 DH</option>
+                    <option value="<500" {% if request.GET.price_range == '<500' %}selected{% endif %}>Under 500 DH</option>
+                    <option value="<1000" {% if request.GET.price_range == '<1000' %}selected{% endif %}>Under 1000 DH</option>
+                    <option value=">1000" {% if request.GET.price_range == '>1000' %}selected{% endif %}>Over 1000 DH</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-primary">Search</button>
+                <a href="{% url 'available_cars' %}" class="btn btn-secondary">Reset</a>
+            </div>
+            <div class="col-md-3 ms-auto text-end">
+                <a href="{% url 'add_car' %}" class="btn btn-secondary btn-icon-split">
+                    <span class="icon text-white-50">
+                        <i class="fas fa-plus-circle"></i> 
+                    </span>
+                    <span class="text">Add Car</span>
+                </a>
+            </div>
+        </form>
        
-        <div class="card-body p-0 pt-4">
+        <div class="card-body p-0">
             {% if messages %}
             <div id="temp-message" class="alert alert-success alert-dismissible fade show mt-2 mb-2" 
                 style="">

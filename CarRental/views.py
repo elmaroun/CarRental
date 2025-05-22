@@ -129,9 +129,6 @@ def ManageClient(request):
         reservation_count=Count('reservation')
     ).all()
     return render(request, 'CarRental/ManageClient.html', {'clients': clients})
-def CarsDisponible(request):
-    cars = Car.objects.all()
-    return render(request, 'CarRental/cars.html',{'cars': cars})
 
 def delete_car(request,car_id):
     car = Car.objects.get(id=car_id)
@@ -482,3 +479,28 @@ def ManageClient(request):
         'cin': cin
     }
     return render(request, 'CarRental/ManageClient.html', context)
+
+def CarsDisponible(request):
+    cars = Car.objects.all()
+    
+    # Get search parameters
+    car_name = request.GET.get('car_name', '').strip()
+    price_range = request.GET.get('price_range', '')
+    
+    # Apply filters
+    if car_name:
+        cars = cars.filter(brand__icontains=car_name)
+    
+    if price_range:
+        if price_range.startswith('<'):
+            max_price = int(price_range[1:])
+            cars = cars.filter(price_per_day__lt=max_price)
+        elif price_range.startswith('>'):
+            min_price = int(price_range[1:])
+            cars = cars.filter(price_per_day__gt=min_price)
+    
+    context = {
+        'cars': cars,
+    }
+    return render(request, 'CarRental/cars.html', context)
+
