@@ -127,6 +127,7 @@
                     <th>Number of Days</th>
                     <th>Prix Total</th>
                     <th>Date Reservation</th>
+                    <th>Status</th>
                 </tr>
             </thead>
             {% for reservation in reservations %}
@@ -139,6 +140,13 @@
                     <td>{{ reservation.duration_days }} days</td>
                     <td>  {{ reservation.total_price|floatformat:2 }} DH</td>
                     <td>{{ reservation.created_at|date:"M d, Y H:i" }}</td>
+                    <td>
+                        {% if reservation.status == "cancelled" %}
+                            <span class="badge badge-danger">Cancelled</span>
+                        {% elif reservation.status == "confirmed" %}
+                            <span class="badge badge-success">Confirmed</span>
+                        {% endif %}
+                    </td>
                 </tr>
                 
             </tbody>

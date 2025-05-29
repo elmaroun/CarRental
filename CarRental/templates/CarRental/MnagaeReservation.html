@@ -131,7 +131,12 @@
                         <td>{{ reservation.car.brand }}</td>
                         <td>{{ reservation.client.full_name }}</td>
                         <td>{{ reservation.start_date|date:"M d, Y" }} -> {{ reservation.end_date|date:"M d, Y" }}</td>
-                        <td>{{ reservation.status}}</td>
+                        
+                        <td>
+                            {% if reservation.status == "pending" %}
+                            <span class="badge badge-warning" style="font-size: 0.85em;">Pending</span>
+                            {% endif %}
+                        </td>
                         <td>
                             {{ reservation.total_price|floatformat:2 }} DH
                         </td>

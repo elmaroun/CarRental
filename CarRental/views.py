@@ -435,13 +435,13 @@ def accept_reservation(request, id):
     reservation = get_object_or_404(Reservation, id=id)
     reservation.status = 'confirmed'
     reservation.save()
-    return redirect('manage_reservation')
+    return redirect('history')
 
 def decline_reservation(request, id):
-        reservation = get_object_or_404(Reservation, id=id)
-        reservation.status = 'cancelled'
-        reservation.save()
-        return redirect('manage_reservation')
+    reservation = get_object_or_404(Reservation, id=id)
+    reservation.status = 'cancelled'
+    reservation.save()
+    return redirect('history')
 
 
 def ManageReservation(request):
