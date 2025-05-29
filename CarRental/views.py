@@ -203,41 +203,49 @@ def CarManagementtt(request):
             'error': error_details
         })
 
+from django.utils.dateparse import parse_date
+from django.shortcuts import render
+from .models import Car, Reservation
+
 def CarManagement(request):
     brand = request.GET.get('brand', '').strip()
-    start_date = parse_date(request.GET.get('start_date', ''))
-    end_date = parse_date(request.GET.get('end_date', ''))
+    start_date_str = request.GET.get('start_date', '').strip()
+    end_date_str = request.GET.get('end_date', '').strip()
+    
+    # Parse dates
+    start_date = parse_date(start_date_str)
+    end_date = parse_date(end_date_str)
 
-    try:
-        cars = Car.objects.all()
+    cars = Car.objects.all()
 
-        if brand:
-            cars = cars.filter(brand__icontains=brand)
+    if brand:
+        cars = cars.filter(brand__icontains=brand)
 
-        # Filter only if both start and end date are provided
-        if start_date and end_date:
-            # Get reservations that are confirmed and intersect with selected period
-            reserved_car_ids = Reservation.objects.filter(
-                status='confirmed',
-                start_date__lte=end_date,
-                end_date__gte=start_date
-            ).values_list('car_id', flat=True)
+    if start_date and end_date:
+        if start_date > end_date:
+            # Optional: handle invalid date range
+            return render(request, 'CarRental/carManagement.html', {
+                'cars': [],
+                'error': 'Start date must be before end date.'
+            })
 
-            # Exclude those cars from the list
-            cars = cars.exclude(id__in=reserved_car_ids)
+        
+        reserved_car_ids = Reservation.objects.filter(
+            status='confirmed',
+            start_date__lte=end_date,
+            end_date__gte=start_date
+        ).values_list('car_id', flat=True)
 
-        return render(request, 'CarRental/carManagement.html', {
-            'cars': cars
-        })
+        reserved_ids = list(reserved_car_ids)
+        cars = [car for car in cars if car.id not in reserved_ids]
 
-    except Exception as e:
-        error_details = traceback.format_exc()
-        messages.error(request, "Error fetching cars. Check logs for details.")
-        print(error_details)
-        return render(request, 'CarRental/carManagement.html', {
-            'cars': [],
-            'error': error_details
-        })
+    return render(request, 'CarRental/carManagement.html', {
+        'cars': cars,
+        'brand': brand,
+        'start_date': start_date_str,
+        'end_date': end_date_str,
+    })
+
 
 def History(request):
     reservations = Reservation.objects.exclude(status='pending').select_related('client', 'car')
@@ -385,69 +393,65 @@ def add_car(request):
 
     return render(request, 'CarRental/add_car.html')
 
+from django.core.serializers.json import DjangoJSONEncoder
+import json
+
 def add_reservation(request, car_id):
     try:
         car = Car.objects.get(id=car_id)
         
-        if request.method == 'POST':
-            # Parse datetime strings
-            start_date = parse_date(request.POST.get('start_date'))
-            end_date = parse_date(request.POST.get('end_date'))
+        # Get all dates already reserved for this car
+        reservations = Reservation.objects.filter(car=car, status='confirmed')
+        reserved_dates = []
+        for r in reservations:
+            current = r.start_date
+            while current <= r.end_date:
+                reserved_dates.append(current.strftime('%Y-%m-%d'))
+                current += timedelta(days=1)
 
-            if not start_date or not end_date:
-                raise ValueError("Invalid date format")
-            # Get form data
+        if request.method == 'POST':
+            start_date = request.POST.get('start_date')
+            end_date = request.POST.get('end_date')
             cin = request.POST.get('cin')
             client_name = request.POST.get('full_name')
             email = request.POST.get('email')
             phone = request.POST.get('phone')
-            start_date = request.POST.get('start_date')
-            end_date = request.POST.get('end_date')
             
-            # Check if client exists by CIN
             try:
                 client = Client.objects.get(cin=cin)
-                # Update existing client info if needed
                 client.full_name = client_name
                 client.email = email
                 client.phone = phone
                 client.save()
             except Client.DoesNotExist:
-                # Create new client
                 client = Client.objects.create(
                     full_name=client_name,
                     email=email,
                     phone=phone,
                     cin=cin
                 )
-            
-            # Create reservation
+
             Reservation.objects.create(
                 client=client,
                 car=car,
                 start_date=start_date,
                 end_date=end_date,
-                status='pending'  # or 'confirmed' depending on your workflow
+                status='pending'
             )
-            
+
             messages.success(request, "Reservation created successfully!")
-            return redirect('manage_reservation')            
-            
-        return render(request, 'CarRental/add_reservation.html', {
-            'car': car,
-            'today': timezone.now().strftime('%Y-%m-%dT%H:%M')
-        })
+            return redirect('manage_reservation')
         
-    except Car.DoesNotExist:
-        messages.error(request, "Car not found")
-        return redirect('cars_overview')
-    except Exception as e:
-        messages.error(request, f"Error: {str(e)}")
         return render(request, 'CarRental/add_reservation.html', {
             'car': car,
-            'error_message': str(e),
-            'today': timezone.now().strftime('%Y-%m-%dT%H:%M')
+            'today': timezone.now().strftime('%Y-%m-%dT%H:%M'),
+            'reserved_dates': json.dumps(reserved_dates, cls=DjangoJSONEncoder)
         })
+
+    except Car.DoesNotExist:
+        messages.error(request, "Car not found.")
+        return redirect('car_list')
+
 
 def accept_reservation(request, id):
     reservation = get_object_or_404(Reservation, id=id)

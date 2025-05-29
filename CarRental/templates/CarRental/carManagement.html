@@ -104,7 +104,7 @@
  <div class="container-fluid">
 
     <!-- Page Heading -->
-    <h1 class="h3 mb-2 text-gray-800">Available Cars</h1>
+    <h1 class="h3 mb-2 text-gray-800">Reserve Car</h1>
     <p class="mb-4">Reserve your available cars easily with the table below.</p>
 
    
@@ -295,6 +295,31 @@
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+        const startDate = document.querySelector('input[name="start_date"]');
+        const endDate = document.querySelector('input[name="end_date"]');
+
+        function toggleRequiredFields() {
+            if (startDate.value && !endDate.value) {
+            endDate.setAttribute('required', 'required');
+            } else {
+            endDate.removeAttribute('required');
+            }
+
+            if (endDate.value && !startDate.value) {
+            startDate.setAttribute('required', 'required');
+            } else {
+            startDate.removeAttribute('required');
+            }
+        }
+
+        startDate.addEventListener('change', toggleRequiredFields);
+        endDate.addEventListener('change', toggleRequiredFields);
+        });
+        </script>
+
 
 </body>
 
