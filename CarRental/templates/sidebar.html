@@ -14,36 +14,36 @@
     <hr class="sidebar-divider">           
     <li class="nav-item">
         <a class="nav-link" href="{% url 'manage_reservation' %}">                   
-            <i class="fas fa-fw fa-cog"></i>
+            <i class="fas fa-fw fa-clock"></i>
             <span style="font-weight:600;">Pending Reservations</span>
         </a>
     </li>
-    <li class="nav-item">
-        <a class="nav-link" href="{% url 'manage_client' %}">                   
-            <i class="fas fa-fw fa-cog"></i>
-            <span style="font-weight:600;">Client Management</span>
-        </a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" href="{% url 'cars_management' %}">                   
-            <i class="fas fa-fw fa-wrench"></i>
-            <span style="font-weight:600;">Cars Management</span>
-        </a>         
-    </li>
-    <hr class="sidebar-divider">
     <li class="nav-item">
         <a class="nav-link" href="{% url 'history' %}">                   
             <i class="fas fa-fw fa-folder"></i>
             <span style="font-weight:600;">Reservations History</span>
         </a>            
     </li>
+    <hr class="sidebar-divider">
+    <li class="nav-item">
+        <a class="nav-link" href="{% url 'cars_management' %}">                   
+            <i class="fas fa-fw fa-car"></i>
+            <span style="font-weight:600;">Available Cars</span>
+        </a>         
+    </li>
     <li class="nav-item">
         <a class="nav-link" href="{% url 'available_cars' %}">                   
-            <i class="fas fa-fw fa-folder"></i>
-            <span style="font-weight:600;">Available Cars</span>
+            <i class="fas fa-fw fa-car"></i>
+            <span style="font-weight:600;">Cars Management</span>
         </a>            
     </li>
     <hr class="sidebar-divider"> 
+    <li class="nav-item">
+        <a class="nav-link" href="{% url 'manage_client' %}">                   
+            <i class="fas fa-fw fa-users"></i>
+            <span style="font-weight:600;">Clients List</span>
+        </a>
+    </li>
     <li class="nav-item mt-5 pt-5">
         <a class="nav-link" href="{% url 'logout' %}" data-toggle="modal" data-target="#logoutModal">
             <i class="fas fa-fw fa-sign-out-alt"></i>
