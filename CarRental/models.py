@@ -2,13 +2,15 @@ from django.db import models
 from decimal import Decimal
 from django.contrib.auth.hashers import make_password, check_password
 from django.contrib import auth
-from djongo.models import ObjectIdField
+from djongo.models import ObjectIdField #R
 from djongo import models
 from django.contrib.auth.models import (
     AbstractBaseUser,
     BaseUserManager,
     PermissionsMixin
 )
+
+from bson import ObjectId #A
 
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -62,7 +64,8 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def has_perm(self, perm, obj=None):
         return True
-
+    def id_str(self):
+        return str(self._id)
     def has_module_perms(self, app_label):
         return True
 

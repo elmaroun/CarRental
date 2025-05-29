@@ -27,7 +27,7 @@ from django.utils.dateparse import parse_date
 import traceback
 from django.http import JsonResponse
 from decimal import Decimal, InvalidOperation
-
+from djongo.models import ObjectIdField
 
 
 
@@ -37,28 +37,30 @@ User = get_user_model()
 
 def user_login(request):
     if request.user.is_authenticated:
+        # Redirect based on role if already logged in
+        if request.user.role == 'admin':
+            return redirect('admin_dashboard')  # We'll create this view
         return redirect('dashboard')
     
     if request.method == 'POST':
         username = request.POST.get('email', '').strip()
         password = request.POST.get('password', '').strip()
         
-        print(f"Attempting login with username: {username}")  
-        print(f"Attempting login with username: {password}")  # Debug
-# Debug
-        
         user = MongoDBAuthBackend().authenticate(request, username=username, password=password)
         
         if user is not None:
             auth.login(request, user)
-            print(f"Successfully logged in user: {user.email}")  # Debug
-            return redirect('dashboard')
+            
+            # Redirect based on role
+            if user.role == 'admin':
+                return redirect('admin_dashboard')
+            else:
+                return redirect('dashboard')
         else:
             messages.error(request, 'Invalid credentials')
-            print("Login failed")
-            print(user)  # Debug
     
     return render(request, 'CarRental/login.html')
+
 
 def user_logout(request):
     logout(request)
@@ -533,3 +535,59 @@ def modify_car(request):
         except Exception as e:
             return JsonResponse({'success': False, 'error': str(e)})
     return JsonResponse({'success': False, 'error': 'Invalid request'})
+
+def admin_dashboard(request):
+    if not request.user.is_authenticated or request.user.role != 'admin':
+        return redirect('login')
+    
+    managers = User.objects.filter(role='manager')
+
+    context = {
+        'managers': managers
+    }
+    return render(request, 'CarRental/admin_dashboard.html', context)
+
+def add_manager(request):
+    if not request.user.is_authenticated or request.user.role != 'admin':
+        return redirect('login')
+    
+    if request.method == 'POST':
+        # Process form data
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        full_name = request.POST.get('full_name')
+        username = request.POST.get('username')
+        
+        try:
+            # Create new manager user
+            user = User.objects.create_user(
+                email=email,
+                password=password,
+                full_name=full_name,
+                username=username,
+                role='manager'
+            )
+            messages.success(request, 'Manager added successfully!')
+            return redirect('admin_dashboard')
+        except Exception as e:
+            messages.error(request, f'Error adding manager: {str(e)}')
+    
+    return render(request, 'CarRental/add_manager.html')
+from bson.objectid import ObjectId
+from django.shortcuts import get_object_or_404
+
+def delete_manager(request, _id):
+    if not request.user.is_authenticated or request.user.role != 'admin':
+        return redirect('login')
+    
+    try:
+        # Convert string ID to ObjectId and use _id field for querying
+        manager = User.objects.get(_id=ObjectId(_id))
+        manager.delete()
+        messages.success(request, 'Manager deleted successfully!')
+    except User.DoesNotExist:
+        messages.error(request, 'Manager not found!')
+    except Exception as e:
+        messages.error(request, f'Error deleting manager: {str(e)}')
+    
+    return redirect('admin_dashboard')

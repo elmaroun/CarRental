@@ -40,6 +40,11 @@ urlpatterns = [
     path('reservation/<int:id>/decline/', views.decline_reservation, name='decline_reservation'),
     path('reservations/manage/', views.ManageReservation, name='manage_reservation'),
     path('modify-car/', views.modify_car, name='modify_car'),
+
+
+    path('admin-dashboard/', views.admin_dashboard, name='admin_dashboard'),
+    path('delete-manager/<str:_id>/', views.delete_manager, name='delete_manager'),
+    path('add-manager/', views.add_manager, name='add_manager'),
 ]
 
 if settings.DEBUG:
