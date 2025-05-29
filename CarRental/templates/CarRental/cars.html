@@ -131,28 +131,6 @@
         </form>
        
         <div class="card-body p-0">
-            {% if messages %}
-            <div id="temp-message" class="alert alert-success alert-dismissible fade show mt-2 mb-2" 
-                style="">
-                {% for message in messages %}
-                    {{ message }}
-                {% endfor %}
-            </div>
-
-            <script>
-                // Auto-hide message after 3 seconds
-                setTimeout(function() {
-                    var message = document.getElementById('temp-message');
-                    if (message) {
-                        message.style.transition = 'opacity 0.5s';
-                        message.style.opacity = '0';
-                        setTimeout(function() {
-                            message.remove();
-                        }, 500);
-                    }
-                }, 3000);  // 3000 milliseconds = 3 seconds
-            </script>
-            {% endif %}
         <div class="table-responsive">
 
             <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
@@ -178,7 +156,6 @@
                         <td>{{ car.brand }}</td>
                         <td>{{ car.price_per_day }}</td>
                         <td>{{ car.date_added }}</td>
-                        <td>{{ car.id}}</td>
 
 
                         <td class="align-middle text-center">

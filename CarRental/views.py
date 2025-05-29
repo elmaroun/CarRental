@@ -488,8 +488,7 @@ def ManageClient(request):
     return render(request, 'CarRental/ManageClient.html', context)
 
 def CarsDisponible(request):
-    cars = Car.objects.all()
-    
+    cars =  Car.objects.all().order_by('-date_added')    
     # Get search parameters
     car_name = request.GET.get('car_name', '').strip()
     price_range = request.GET.get('price_range', '')
@@ -521,13 +520,18 @@ def modify_car(request):
             car.brand = request.POST.get('carBrand')
             car.fuel_type = request.POST.get('carFuel')
             car.transmission = request.POST.get('carTransmission')
-            car.seats = int(request.POST.get('carSeats'))
-            price_str = request.POST.get('carPrice')
-            car.price = Decimal(price_str)
+            car.number_of_seats = int(request.POST.get('carSeats'))
+            car.price_per_day = request.POST.get('carPrice')
             
             # Handle file upload
             if 'carImage' in request.FILES:
-                car.image = request.FILES['carImage']
+                uploaded_file = request.FILES['carImage']
+                # Generate a new filename or use the original
+                car.url_img = f"/media/cars/{uploaded_file.name}"
+                # Save the file to your media directory
+                with open(f"media/cars/{uploaded_file.name}", 'wb+') as destination:
+                    for chunk in uploaded_file.chunks():
+                        destination.write(chunk)
             
             car.save()
             
