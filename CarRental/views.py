@@ -99,9 +99,9 @@ def dashboard(request):
         status_labels = []
         status_data = []
         status_colors = {
-            'pending': '#ffc107',    # Yellow
+            'cancelled': '#f44336',   # Red
             'confirmed': '#4caf50',  # Green
-            'cancelled': '#f44336'   # Red
+            'pending': '#ffc107'    # Yellow
         }
         
         for item in status_counts:
@@ -240,11 +240,29 @@ def CarManagement(request):
         })
 
 def History(request):
-    reservations = Reservation.objects.exclude(
-        status='pending'
-    ).select_related('client', 'car').all()
-    
-    return render(request, 'CarRental/history.html', {'reservations': reservations})
+    reservations = Reservation.objects.exclude(status='pending').select_related('client', 'car')
+
+    client_name = request.GET.get('client_name', '').strip()
+    car_name = request.GET.get('car_name', '').strip()
+    status = request.GET.get('status', '').strip()
+
+    if client_name:
+        reservations = reservations.filter(client__full_name__icontains=client_name)
+
+    if car_name:
+        reservations = reservations.filter(car__brand__icontains=car_name)
+
+    if status:
+        reservations = reservations.filter(status=status)
+
+    context = {
+        'reservations': reservations,
+        'client_name': client_name,
+        'car_name': car_name,
+        'status': status,
+    }
+    return render(request, 'CarRental/history.html', context)
+
 
 def add_car(request):
     if request.method == 'POST':

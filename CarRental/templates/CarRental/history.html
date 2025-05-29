@@ -11,7 +11,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Mnager - Dashboard</title>
+    <title>Cars - Rent the Perfect Car</title>
 
     <!-- Custom fonts for this template-->
     <link href="{% static 'vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet" type="text/css">
@@ -106,17 +106,25 @@
     <!-- Page Heading -->
     <h1 class="h3 mb-2 text-gray-800">Reservations History</h1>
     <p class="mb-4">View the full history of reservations using the table below.</p>
-    <div class="row mb-4">
+    <form method="get" class="row mb-4">
         <div class="col-md-3">
-            <input type="text" id="clientSearch" class="form-control" placeholder="Search by Client Name">
+            <input type="text" name="client_name" id="clientSearch" class="form-control" placeholder="Search by Client Name" value="{{ client_name }}">
         </div>
         <div class="col-md-3">
-            <input type="text" id="carSearch" class="form-control" placeholder="Search by Car Name">
+            <input type="text" name="car_name" id="carSearch" class="form-control" placeholder="Search by Car Name" value="{{ car_name }}">
         </div>
         <div class="col-md-3">
-            <input type="date" id="dateSearch" class="form-control" placeholder="Select a Date">
+            <select name="status" class="form-control">
+                <option value="">All Statuses</option>
+                <option value="confirmed" {% if status == 'confirmed' %}selected{% endif %}>Confirmed</option>
+                <option value="cancelled" {% if status == 'cancelled' %}selected{% endif %}>Cancelled</option>
+            </select>
         </div>
-    </div>
+        <div class="col-md-3">
+            <button type="submit" class="btn btn-primary">Search</button>
+            <a href="{% url 'history' %}" class="btn btn-secondary">Reset</a>
+        </div>
+    </form>
     <div class="table-responsive">
         <table class="table table-bordered bg-white" id="dataTable" width="100%" cellspacing="0">
             <thead>
