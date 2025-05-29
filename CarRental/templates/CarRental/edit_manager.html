@@ -1,0 +1,81 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Add New Manager</title>
+    <link href="{% static 'vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+    <link href="{% static 'css/sb-admin-2.min.css' %}" rel="stylesheet">
+</head>
+
+<body class="bg-gradient-primary">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-xl-8 col-lg-10 col-md-7">
+                <div class="card o-hidden border-0 shadow-lg my-5">
+                    <div class="card-body p-0">
+                        <div class="row justify-content-center">
+                            <div class="col-lg-10">
+                                <div class="p-5">
+                                
+                                    
+                                    <form class="user" style="color:black;" method="post">
+                                        {% csrf_token %}
+                                        
+                                        <!-- Full Name -->
+                                        <div class="form-group">
+                                            <p class="mb-1 ml-2">Full Name</p>
+                                            <input type="text" name="full_name" class="form-control form-control-user"
+                                                id="fullName" placeholder="Enter manager's full name"
+                                                value="{{ manager.full_name }}" required>
+                                        </div>
+
+                                        <!-- Username -->
+                                        <div class="form-group">
+                                            <p class="mb-1 ml-2">Username</p>
+                                            <input type="text" name="username" class="form-control form-control-user"
+                                                id="username" placeholder="Enter username"
+                                                value="{{ manager.username }}" required>
+                                        </div>
+
+                                        <!-- Email -->
+                                        <div class="form-group">
+                                            <p class="mb-1 ml-2">Email</p>
+                                            <input type="email" name="email" class="form-control form-control-user"
+                                                id="email" placeholder="Enter email address"
+                                                value="{{ manager.email }}" required>
+                                        </div>
+
+                                        <!-- Password -->
+                                        <div class="form-group">
+                                            <p class="mb-1 ml-2">Password</p>
+                                            <input type="password" name="password" class="form-control form-control-user"
+                                                id="password" placeholder="Enter new password (leave blank to keep current)">
+                                        </div>
+
+                                        <button type="submit" class="btn btn-primary btn-user btn-block">
+                                            Update Manager
+                                        </button>
+                                        <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary btn-user btn-block">
+                                            Cancel
+                                        </a>
+                                    </form>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
+    <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+</body>
+</html>

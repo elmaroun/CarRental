@@ -45,6 +45,8 @@ urlpatterns = [
     path('admin-dashboard/', views.admin_dashboard, name='admin_dashboard'),
     path('delete-manager/<str:_id>/', views.delete_manager, name='delete_manager'),
     path('add-manager/', views.add_manager, name='add_manager'),
+    path('edit-manager/<str:_id>/', views.edit_manager, name='edit_manager'),
+
 ]
 
 if settings.DEBUG:

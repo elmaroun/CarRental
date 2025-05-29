@@ -76,8 +76,8 @@ def dashboard(request):
         one_year_ago = timezone.now() - timedelta(days=365)
         
         reservations = Reservation.objects.filter(
-            created_at__gte=one_year_ago
-        ).values_list('created_at', flat=True)
+            start_date__gte=one_year_ago
+        ).values_list('start_date', flat=True)
         
         from collections import defaultdict
         monthly_counts = defaultdict(int)
@@ -466,24 +466,43 @@ def decline_reservation(request, id):
     return redirect('history')
 
 
+from decimal import Decimal
+
 def ManageReservation(request):
     reservations = Reservation.objects.filter(status='pending').select_related('client', 'car')
 
     client_name = request.GET.get('client_name', '').strip()
     car_name = request.GET.get('car_name', '').strip()
+    price_range = request.GET.get('price_range', '').strip()
 
     if client_name:
         reservations = reservations.filter(client__full_name__icontains=client_name)
 
     if car_name:
-        reservations = reservations.filter(car__brand__icontains=car_name)  # Adjust if your car name is in another field
+        reservations = reservations.filter(car__brand__icontains=car_name)
+
+    # Filter by total_price using Python because it's a property
+    if price_range:
+        filtered = []
+        for reservation in reservations:
+            price = reservation.total_price
+            if (
+                (price_range == 'under_300' and price < 300) or
+                (price_range == '300_600' and 300 <= price <= 600) or
+                (price_range == '600_1000' and 600 < price <= 1000) or
+                (price_range == '1000_2000' and 1000 < price <= 2000) or
+                (price_range == 'over_2000' and price > 2000)
+            ):
+                filtered.append(reservation)
+        reservations = filtered
 
     context = {
         'reservations': reservations,
         'client_name': client_name,
-        'car_name': car_name
+        'car_name': car_name,
+        'price_range': price_range,
     }
-    return render(request, 'CarRental/MnagaeReservation.html',context)
+    return render(request, 'CarRental/MnagaeReservation.html', context)
 
 
 def ManageClient(request):
@@ -630,3 +649,40 @@ def delete_manager(request, _id):
         messages.error(request, f'Error deleting manager: {str(e)}')
     
     return redirect('admin_dashboard')
+
+
+from bson import ObjectId
+from django.contrib.auth.hashers import make_password
+
+def edit_manager(request, _id):
+    if not request.user.is_authenticated or request.user.role != 'admin':
+        return redirect('login')
+
+    try:
+        manager = User.objects.get(_id=ObjectId(_id))
+    except User.DoesNotExist:
+        messages.error(request, 'Manager not found!')
+        return redirect('admin_dashboard')
+
+    if request.method == 'POST':
+        full_name = request.POST.get('full_name')
+        username = request.POST.get('username')
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+
+        # Update fields
+        manager.full_name = full_name
+        manager.username = username
+        manager.email = email
+
+        if password:  # Update password only if provided
+            manager.password = make_password(password)
+
+        manager.save()
+
+        messages.success(request, 'Manager updated successfully!')
+        return redirect('admin_dashboard')
+
+    return render(request, 'CarRental/edit_manager.html', {
+        'manager': manager
+    })
