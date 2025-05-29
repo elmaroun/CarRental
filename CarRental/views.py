@@ -506,27 +506,40 @@ def ManageClient(request):
     return render(request, 'CarRental/ManageClient.html', context)
 
 def CarsDisponible(request):
-    cars =  Car.objects.all().order_by('-date_added')    
-    # Get search parameters
+    cars = Car.objects.all()
     car_name = request.GET.get('car_name', '').strip()
-    price_range = request.GET.get('price_range', '')
-    
-    # Apply filters
+    price_range = request.GET.get('price_range', '').strip()
+
+    # Filter by car name
     if car_name:
         cars = cars.filter(brand__icontains=car_name)
-    
+
+    # Filter and sort by price only if price_range is provided
     if price_range:
-        if price_range.startswith('<'):
-            max_price = int(price_range[1:])
-            cars = cars.filter(price_per_day__lt=max_price)
-        elif price_range.startswith('>'):
-            min_price = int(price_range[1:])
-            cars = cars.filter(price_per_day__gt=min_price)
-    
+        if price_range == 'under_100':
+            cars = cars.filter(price_per_day__lt=100)
+        elif price_range == '100_250':
+            cars = cars.filter(price_per_day__gte=100, price_per_day__lte=250)
+        elif price_range == '250_500':
+            cars = cars.filter(price_per_day__gte=250, price_per_day__lte=500)
+        elif price_range == '500_1000':
+            cars = cars.filter(price_per_day__gte=500, price_per_day__lte=1000)
+        elif price_range == 'over_1000':
+            cars = cars.filter(price_per_day__gt=1000)
+
+        # Sort by price when filtering by price
+        cars = cars.order_by('price_per_day')
+    else:
+        # Default sort by brand (car name)
+        cars = cars.order_by('brand')
+
     context = {
         'cars': cars,
+        'car_name': car_name,
+        'price_range': price_range,
     }
     return render(request, 'CarRental/cars.html', context)
+
 
 def modify_car(request):
     if request.method == 'POST':

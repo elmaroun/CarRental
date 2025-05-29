@@ -107,13 +107,11 @@
             <div class="col-md-3">
                 <select name="price_range" id="priceRange" class="form-control">
                     <option value="">All Prices</option>
-                    <option value="<100" {% if request.GET.price_range == '<100' %}selected{% endif %}>Under 100 DH</option>
-                    <option value="<200" {% if request.GET.price_range == '<200' %}selected{% endif %}>Under 200 DH</option>
-                    <option value="<300" {% if request.GET.price_range == '<300' %}selected{% endif %}>Under 300 DH</option>
-                    <option value="<400" {% if request.GET.price_range == '<400' %}selected{% endif %}>Under 400 DH</option>
-                    <option value="<500" {% if request.GET.price_range == '<500' %}selected{% endif %}>Under 500 DH</option>
-                    <option value="<1000" {% if request.GET.price_range == '<1000' %}selected{% endif %}>Under 1000 DH</option>
-                    <option value=">1000" {% if request.GET.price_range == '>1000' %}selected{% endif %}>Over 1000 DH</option>
+                    <option value="under_100" {% if request.GET.price_range == 'under_100' %}selected{% endif %}>Under 100 DH</option>
+                    <option value="100_250" {% if request.GET.price_range == '100_250' %}selected{% endif %}>100 - 250 DH</option>
+                    <option value="250_500" {% if request.GET.price_range == '250_500' %}selected{% endif %}>250 - 500 DH</option>
+                    <option value="500_1000" {% if request.GET.price_range == '500_1000' %}selected{% endif %}>500 - 1000 DH</option>
+                    <option value="over_1000" {% if request.GET.price_range == 'over_1000' %}selected{% endif %}>Over 1000 DH</option>
                 </select>
             </div>
             <div class="col-md-3">
