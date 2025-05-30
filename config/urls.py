@@ -47,6 +47,8 @@ urlpatterns = [
     path('add-manager/', views.add_manager, name='add_manager'),
     path('edit-manager/<str:_id>/', views.edit_manager, name='edit_manager'),
 
+    path('clients/create/', views.add_client, name='create_client'),
+
 ]
 
 if settings.DEBUG:

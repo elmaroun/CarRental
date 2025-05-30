@@ -521,6 +521,9 @@ def ManageClient(request):
     if cin:
         clients = clients.filter(cin__icontains=cin)
     
+    # Sort by created_at descending (newest first)
+    clients = clients.order_by('-created_at')
+    
     context = {
         'clients': clients,
         'client_name': client_name,
@@ -686,3 +689,29 @@ def edit_manager(request, _id):
     return render(request, 'CarRental/edit_manager.html', {
         'manager': manager
     })
+
+
+from django.shortcuts import render, redirect
+from .models import Client
+
+def add_client(request):
+    if request.method == 'POST':
+        full_name = request.POST.get('full_name')
+        email = request.POST.get('email')
+        phone = request.POST.get('phone')
+        cin = request.POST.get('cin')
+
+        if Client.objects.filter(email=email).exists():
+            return render(request, 'CarRental/add_client.html', {
+                'error_message': 'Email already exists'
+            })
+
+        Client.objects.create(
+            full_name=full_name,
+            email=email,
+            phone=phone,
+            cin=cin
+        )
+        return redirect('manage_client')  # replace with your actual URL name
+
+    return render(request, 'CarRental/add_client.html')

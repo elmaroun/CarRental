@@ -1,0 +1,77 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Add New Client</title>
+    <link href="{% static 'vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,300,400,700,900" rel="stylesheet">
+    <link href="{% static 'css/sb-admin-2.min.css' %}" rel="stylesheet">
+</head>
+
+<body class="bg-gradient-primary">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-xl-8 col-lg-10 col-md-7">
+                <div class="card o-hidden border-0 shadow-lg my-5">
+                    <div class="card-body p-0">
+                        <div class="row justify-content-center">
+                            <div class="col-lg-10">
+                                <div class="p-5">
+                                    <form class="user" method="post" style="color:black;">
+                                        {% csrf_token %}
+                                        
+                                        {% if error_message %}
+                                            <div class="alert alert-danger">{{ error_message }}</div>
+                                        {% endif %}
+
+                                        <div class="form-group">
+                                            <p class="mb-1 ml-2">Full Name</p>
+                                            <input type="text" name="full_name" class="form-control form-control-user"
+                                                   placeholder="Enter full name" required>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <p class="mb-1 ml-2">Email</p>
+                                            <input type="email" name="email" class="form-control form-control-user"
+                                                   placeholder="Enter email" required>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <p class="mb-1 ml-2">Phone</p>
+                                            <input type="text" name="phone" class="form-control form-control-user"
+                                                   placeholder="Enter phone number" required>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <p class="mb-1 ml-2">CIN</p>
+                                            <input type="text" name="cin" class="form-control form-control-user"
+                                                   placeholder="Enter CIN" required>
+                                        </div>
+
+                                        <button type="submit" class="btn btn-primary btn-user btn-block">
+                                            Add Client
+                                        </button>
+
+                                        <a href="{% url 'manage_client' %}" class="btn btn-secondary btn-user btn-block">
+                                            Cancel
+                                        </a>
+
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
+    <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+</body>
+</html>
