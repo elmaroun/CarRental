@@ -49,6 +49,8 @@ urlpatterns = [
 
     path('clients/create/', views.add_client, name='create_client'),
 
+    path('clients/delete/<int:client_id>/', views.delete_client, name='delete_client'),
+
 ]
 
 if settings.DEBUG:

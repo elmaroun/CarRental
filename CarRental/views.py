@@ -715,3 +715,14 @@ def add_client(request):
         return redirect('manage_client')  # replace with your actual URL name
 
     return render(request, 'CarRental/add_client.html')
+
+
+
+from django.shortcuts import redirect, get_object_or_404
+from .models import Client
+
+def delete_client(request, client_id):
+    if request.method == 'POST':
+        client = get_object_or_404(Client, id=client_id)
+        client.delete()
+    return redirect('manage_client')

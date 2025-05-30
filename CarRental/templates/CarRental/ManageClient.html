@@ -112,6 +112,7 @@
                                         <th>Number Reservation</th>
                                         <th>Phone NUMBER</th>
                                         <th>EMAIL</th>
+                                        <th>Action</th>
                                     </tr>
                                 </thead>
                                 {% for client in clients %}
@@ -123,6 +124,14 @@
                                         <td>{{ client.reservation_count }}</td>
                                         <td>{{ client.phone }}</td>
                                         <td>{{ client.email }}</td>
+                                        <td>
+                                            <form action="{% url 'delete_client' client.id %}" method="post" onsubmit="return confirm('Are you sure you want to delete this client?');">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-sm btn-danger">
+                                                    <i class="fas fa-trash-alt"></i> Delete
+                                                </button>
+                                            </form>
+                                        </td>
                                     </tr>                 
                                 </tbody>
                                 {% endfor %}
