@@ -146,10 +146,12 @@
                     {% for car in cars %}
                     <tr>
                         <td>
-                            <img src="{{ car.url_img }}" 
-                                    alt="Car Image" 
-                                    class="img-fluid rounded"
-                                    style="max-height: 60px;">
+                            <div style="position: relative; width: 100px; aspect-ratio: 16/9; overflow: hidden;">
+                                <img src="{{ car.url_img }}"
+                                     alt="Car Image"
+                                     class="img-fluid rounded"
+                                     style="width: 100%; height: 100%; object-fit: cover;">
+                            </div>
                         </td>
                         <td>{{ car.brand }}</td>
                         <td>{{ car.price_per_day }} MAD /day</td>
@@ -240,11 +242,11 @@
     
                                 <!-- Car Details -->
                                 <div class="px-3">
-                                    <h6 class="mb-2"><strong >Type de carburant :</strong> Essence</h6>
+                                    <h6 class="mb-2"><strong >Fuel Type :</strong> Essence</h6>
                                     <h6 class="mb-2"><strong >Transmission :</strong> Automatique</h6>
-                                    <h6 class="mb-2"><strong>Nombre de places :</strong> 5</h6>
-                                    <h6 class="mb-2"><strong>Prix :</strong> 132</h6>
-                                    <h6 class="mb-2"><strong>Date ajoutée :</strong> 132</h6>
+                                    <h6 class="mb-2"><strong>Number of Seatss :</strong> 5</h6>
+                                    <h6 class="mb-2"><strong>Price /day :</strong> 132</h6>
+                                    <h6 class="mb-2"><strong>Added at :</strong> 132</h6>
                                 </div>
     
                                 <!-- Optional Close Button -->
@@ -365,15 +367,15 @@
 
             const modalBody = document.querySelector('#portfolioModal2 .modal-body');
             modalBody.querySelector('h6:nth-of-type(1)').innerHTML = 
-                '<strong>Type de carburant : </strong>' + fuelType;
+                '<strong>Fuel Type : </strong>' + fuelType;
             modalBody.querySelector('h6:nth-of-type(2)').innerHTML = 
                 '<strong>Transmission : </strong>' + transmission;
             modalBody.querySelector('h6:nth-of-type(3)').innerHTML = 
-                '<strong>Nombre de place :</strong>' + seats;
+                '<strong>Number of Seats :</strong>' + seats;
             modalBody.querySelector('h6:nth-of-type(4)').innerHTML = 
                 '<strong>Price :</strong>' + price;
             modalBody.querySelector('h6:nth-of-type(5)').innerHTML = 
-            '<strong>Date ajoutée:</strong>' + date_added ;
+            '<strong>Added at:</strong>' + date_added ;
 
             $('#portfolioModal2').modal('show');
         }

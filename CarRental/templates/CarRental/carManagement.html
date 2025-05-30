@@ -147,12 +147,14 @@
 
                     <div class="col-md-12 col-lg-4 mb-4 mb-lg-0 pb-4">
                     <div class="card text-black">
-                        <img src="{{ car.url_img}}" alt="Car Image" class="img-fluid">
+                        <div style="position: relative; width: 100%; padding-top: 56.25%; overflow: hidden; border-radius: 0.5rem;">
+                            <img src="{{ car.url_img }}" alt="Car Image" class="img-fluid" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;">
+                        </div>
 
                         <div class="card-body">
                         <div class="text-center mt-1">
                             <h4 class="card-title">{{ car.brand }}</h4>
-                            <h6 class="text-primary mb-1 pb-3">{{ car.price_per_day}} MAD</h6>
+                            <h6 class="text-primary mb-1 pb-3">{{ car.price_per_day}} MAD /day</h6>
                         </div>
                         <div class="d-flex flex-row justify-content-center ">
                         <a href="{% url 'add_reservation' car.id %}" class="btn btn-primary flex-fill mr-2">
@@ -230,11 +232,11 @@
     
                                 <!-- Car Details -->
                                 <div class="px-3">
-                                    <h6 class="mb-2"><strong >Type de carburant :</strong> Essence</h6>
+                                    <h6 class="mb-2"><strong >Fuel Type :</strong> Essence</h6>
                                     <h6 class="mb-2"><strong >Transmission :</strong> Automatique</h6>
-                                    <h6 class="mb-2"><strong>Nombre de places :</strong> 5</h6>
-                                    <h6 class="mb-2"><strong>Prix :</strong> 132</h6>
-                                    <h6 class="mb-2"><strong>Date ajoutée :</strong> 132</h6>
+                                    <h6 class="mb-2"><strong>Number of Seatss :</strong> 5</h6>
+                                    <h6 class="mb-2"><strong>Price /day :</strong> 132</h6>
+                                    <h6 class="mb-2"><strong>Added at :</strong> 132</h6>
                                 </div>
     
                                 <!-- Optional Close Button -->
@@ -277,15 +279,15 @@
 
             const modalBody = document.querySelector('#portfolioModal2 .modal-body');
             modalBody.querySelector('h6:nth-of-type(1)').innerHTML = 
-                '<strong>Type de carburant : </strong>' + fuelType;
+                '<strong>Fuel Type : </strong>' + fuelType;
             modalBody.querySelector('h6:nth-of-type(2)').innerHTML = 
                 '<strong>Transmission : </strong>' + transmission;
             modalBody.querySelector('h6:nth-of-type(3)').innerHTML = 
-                '<strong>Nombre de place :</strong>' + seats;
+                '<strong>Number of Seats :</strong>' + seats;
             modalBody.querySelector('h6:nth-of-type(4)').innerHTML = 
                 '<strong>Price :</strong>' + price;
             modalBody.querySelector('h6:nth-of-type(5)').innerHTML = 
-            '<strong>Date ajoutée:</strong>' + date_added ;
+            '<strong>Added at:</strong>' + date_added ;
 
             $('#portfolioModal2').modal('show');
         }
